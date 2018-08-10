@@ -2,39 +2,32 @@ package com.lin.rxdemo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-import com.lin.rxdemo.network.service.observers.HttpObservers;
-import com.lin.rxdemo.network.service.observers.ObserverOnListener;
-import com.lin.rxdemo.network.service.serviceapi.UserApi;
+import com.lin.rxdemo.mvp.contract.MeiMeiContract;
+import com.lin.rxdemo.mvp.presenter.MeiMeiPresenter;
+import com.lin.rxdemo.network.service.observers.DisposableManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-    private List<MeiMeiBean.ResultsBean> mList = new ArrayList<>();
+public class MainActivity extends AppCompatActivity implements MeiMeiContract.View{
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getData(1);
     }
 
-    public List<MeiMeiBean.ResultsBean> getData(final int page) {
 
-        UserApi.getInstance().getMeiMeiInfo((page + 1), new HttpObservers<List<MeiMeiBean.ResultsBean>>(new ObserverOnListener() {
+    @Override
+    protected void onDestroy() {
+        DisposableManager.dispose();
+        super.onDestroy();
+    }
 
-            @Override
-            public void onSucceed(Object data) {
-                mList.addAll(((MeiMeiBean) data).getResults());
-                Log.e("lin", "data= " + mList.toString());
-            }
-
-            @Override
-            public void onError(int code, String msg) {
-                Log.e("lin", "code= " + code);
-            }
-        }, MainActivity.this));
-        return null;
+    @Override
+    public void updateContentList(List list) {
+        MeiMeiPresenter meiMeiPresenter = MeiMeiPresenter.newInstance();
+        meiMeiPresenter.setContext(this);
+        meiMeiPresenter.initData(1);
     }
 }

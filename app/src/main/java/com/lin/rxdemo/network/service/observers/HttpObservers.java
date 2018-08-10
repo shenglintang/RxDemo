@@ -12,6 +12,8 @@ import io.reactivex.disposables.Disposable;
 
 /**
  * 处理网络请求类
+ * 这里我们选择Observer来作为订阅者
+ * 因为数据量少且不会产生移动端数据处理来不及的问题，采用Flowable的话，其运行效率要比 Observable 低得多。
  * @param <T>
  */
 public class HttpObservers<T> implements Observer<T> {
@@ -25,14 +27,12 @@ public class HttpObservers<T> implements Observer<T> {
     }
 
     public void onUnsubscribe() {
-        if (!this.mDisposable.isDisposed()) {
-            this.mDisposable.dispose();
-        }
+        DisposableManager.dispose();
     }
 
     @Override
     public void onSubscribe(Disposable d) {
-        mDisposable = d;
+        DisposableManager.add(d);
     }
 
     @Override
