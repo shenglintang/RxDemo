@@ -1,17 +1,18 @@
 package com.lin.rxdemo.mvp.contract;
 
-import java.util.List;
+import com.lin.rxdemo.mvp.base.BaseContract;
+import com.lin.rxdemo.mvp.base.CallBackListener;
 
 public interface MeiMeiContract {
     interface Model<T> {
-        List<T> getData(int page);
+        void getData(int page,CallBackListener<T> CallBackListener);
     }
 
-    interface View<L> {
-        void updateContentList(List<L> list);
+    interface View<L> extends BaseContract.BaseView{
+        void updateContentList(L l);
     }
 
-    interface Presenter<L> {
-        List<L> initData(int page);
+    interface Presenter extends BaseContract.BasePresenter<View>{
+        void initData(int page);
     }
 }

@@ -1,33 +1,52 @@
 package com.lin.rxdemo;
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
+import com.lin.rxdemo.mvp.base.BaseActivity;
 import com.lin.rxdemo.mvp.contract.MeiMeiContract;
 import com.lin.rxdemo.mvp.presenter.MeiMeiPresenter;
-import com.lin.rxdemo.network.service.observers.DisposableManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MeiMeiContract.View{
+public class MainActivity extends BaseActivity<MeiMeiPresenter> implements MeiMeiContract.View {
+
+    private MeiMeiPresenter mMeiMeiPresenter;
+    private TextView mTvInfo;
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected MeiMeiPresenter creatPresenter() {
+        mMeiMeiPresenter = new MeiMeiPresenter(this);
+        return mMeiMeiPresenter;
+    }
+
+    @Override
+    protected int layoutId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void initView() {
+        mTvInfo = findViewById(R.id.tv_info);
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+        mMeiMeiPresenter.initData(1);
     }
 
 
     @Override
-    protected void onDestroy() {
-        DisposableManager.dispose();
-        super.onDestroy();
-    }
-
-    @Override
-    public void updateContentList(List list) {
-        MeiMeiPresenter meiMeiPresenter = MeiMeiPresenter.newInstance();
-        meiMeiPresenter.setContext(this);
-        meiMeiPresenter.initData(1);
+    public void updateContentList(Object data) {
+        List<MeiMeiBean.ResultsBean> mList = new ArrayList<>();
+        mList.addAll(((MeiMeiBean) data).getResults());
+        mTvInfo.setText(mList.get(0).getDesc());
     }
 }

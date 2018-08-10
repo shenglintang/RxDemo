@@ -1,32 +1,38 @@
 package com.lin.rxdemo.mvp.presenter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 
-import com.lin.rxdemo.MeiMeiBean;
+import com.lin.rxdemo.mvp.base.BasePresenterImpl;
+import com.lin.rxdemo.mvp.base.CallBackListener;
 import com.lin.rxdemo.mvp.contract.MeiMeiContract;
 import com.lin.rxdemo.mvp.model.MeiMeiModel;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MeiMeiPresenter implements MeiMeiContract.Presenter {
-    List<MeiMeiBean.ResultsBean> mList = new ArrayList<>();
-    MeiMeiModel meiMeiModel = MeiMeiModel.newInstance();
+public class MeiMeiPresenter extends BasePresenterImpl<MeiMeiContract.View> implements MeiMeiContract.Presenter, CallBackListener {
+    private MeiMeiModel meiMeiModel;
     private Context mContext;
 
-    @NonNull
-    public static MeiMeiPresenter newInstance() {
-        return new MeiMeiPresenter();
+    public MeiMeiPresenter(Context context) {
+        mContext = context;
+        meiMeiModel = new MeiMeiModel(mContext);
     }
 
-    public void setContext(Context context) {
-        mContext = context;
+
+    @Override
+    public void initData(int page) {
+        if (meiMeiModel != null) {
+            meiMeiModel.getData(page, this);
+        }
     }
 
     @Override
-    public List initData(int page) {
-        meiMeiModel.setContext(mContext);
-        return  meiMeiModel.getData(page);
+    public void onSuccess(Object data) {
+        if (isViewAttached()) {
+            getView().updateContentList(data);
+        }
+    }
+
+    @Override
+    public void onFail() {
+
     }
 }
